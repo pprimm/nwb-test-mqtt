@@ -1,22 +1,47 @@
 'use strict'
 
-import deepstream from 'deepstream.io-client-js';
 
-//const userUid = ds.getUid();
-const dsOptions = {
-   transports: ['websocket'],
-   rememberUpgrade: true
+import mqtt from 'mqtt'
+import pubsub from 'pubsub-js'
+
+export const mqttClient = mqtt.connect('ws://10.10.101.31:8083/mqtt', {keepAlive: 1})
+
+mqttClient.on('connect', function(err) {
+   console.info('MQTT: Connected');
+});
+
+mqttClient.on('close', function(err) {
+   console.warn('MQTT: Disconnected');
+});
+
+mqttClient.on('error', function(err) {
+   console.warn('MQTT: ' + err);
+});
+
+mqttClient.on('reconnect', function(err) {
+   console.info('MQTT: Reconnecting to MQTT Broker');
+});
+
+mqttClient.on('error', function(err) {
+   console.warn('MQTT: Error talking to MQTT Broker');
+});
+
+mqttClient.on('message', function(topic,message) {
+   pubsub.publishSync( topic, message );
+});
+
+export function subscribe( topic, cb ) {
+   pubsub.subscribe( topic, cb );
+   mqttClient.subscribe( topic );
+   console.log('MQTT: subscribe->' + topic);
 }
 
-let dsClient = deepstream( '10.10.101.35:6020' ,dsOptions ).login({ user: 'webSocketClient', password: 'sesame' });
+export function unsubscribe( topic ) {
+   pubsub.unsubscribe( topic );
+   mqttClient.unsubscribe( topic );
+   console.log('MQTT: unsubscribe->' + topic);
+}
 
-dsClient.on('error', function(err) {
-   console.warn(err);
-   return;
-});
-
-dsClient.on('connectionStateChanged', function(state) {
-   console.log('# Connection State: ' + state);
-});
-
-export default dsClient
+export function publish( topic, message ) {
+   mqttClient.publish( topic, message );
+}

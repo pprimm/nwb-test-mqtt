@@ -12,6 +12,9 @@
   },
   "dependencies": {
     "deepstream.io-client-js": "^0.4.3",
+    "history": "^2.1.0",
+    "mqtt": "^1.8.0",
+    "pubsub-js": "^1.5.3",
     "react": "0.14.x",
     "react-bootstrap": "^0.28.4",
     "react-dom": "0.14.x",

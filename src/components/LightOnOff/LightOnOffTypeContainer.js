@@ -1,7 +1,7 @@
 'use strict'
 
 import React from 'react'
-import dsClient from '../../client'
+import { subscribe, unsubscribe, publish } from '../../client'
 import LightOnOffType from './LightOnOffType'
 
 export default class LighOnOffTypeContainer extends React.Component {
@@ -9,29 +9,32 @@ export default class LighOnOffTypeContainer extends React.Component {
       super()
 
       this.state = {value: 0}
-      this.childUpdate = this.childUpdate.bind(this)
+      this.getValue = this.getValue.bind(this)
+      this.setValue = this.setValue.bind(this)
    }
 
    componentDidMount () {
-      this.cmdTopic = this.props.recordName + '/state'
-      this.record = dsClient.record.getRecord( this.props.recordName )
-      var self = this;
-      this.record.subscribe( 'state', function( value ) {
-         //console.log(self.props.recordName + ' = ' + value)
-         self.setState({value: parseInt(value.toString(), 10)})
-      })
+      //console.log('LightDimTypeContainer::componentDidMount()')
+      //console.log(this.refs)
+      this.getValueTopic = 'get/' + this.props.mqttTopic + '/state'
+      this.setValueTopic = 'set/' + this.props.mqttTopic + '/state'
+      subscribe( this.getValueTopic, this.getValue )
    }
 
    componentWillUnmount () {
-      this.record.discard()
+      unsubscribe( this.getValueTopic )
    }
 
-   childUpdate (data) {
-      dsClient.event.emit( this.cmdTopic, data )
+   getValue ( topic, msg ) {
+      this.setState({value: parseInt(msg.toString(), 10)})
+   }
+
+   setValue (data) {
+      publish( setValueTopic, data )
    }
 
    render () {
-      return <LightOnOffType containerHandler = {this.childUpdate}
+      return <LightOnOffType containerHandler = {this.setValue}
                              displayName = {this.props.displayName}
                              value = {this.state.value} />
    }

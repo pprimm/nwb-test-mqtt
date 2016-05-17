@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { Button, PageHeader } from 'react-bootstrap'
-import history from '../history'
+import { browserHistory } from 'react-router'
 
 export default class HomePage extends React.Component {
   constructor () {
@@ -12,11 +12,11 @@ export default class HomePage extends React.Component {
   }
 
   _handleLight () {
-    history.pushState(null, '/lights')
+    browserHistory.push('/lights')
   }
 
   _handleTv () {
-    history.pushState(null, '/appletv')
+    browserHistory.push('/appletv')
   }
 
   render () {

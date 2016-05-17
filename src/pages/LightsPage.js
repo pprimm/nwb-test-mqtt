@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { PageHeader, Button, Glyphicon } from 'react-bootstrap'
-import history from '../history'
+import { browserHistory } from 'react-router'
 import MasterLightContainer from '../components/MasterLightContainer'
 
 export default class LightsPage extends React.Component {
@@ -12,7 +12,7 @@ export default class LightsPage extends React.Component {
   }
 
   _clickBack () {
-    history.goBack()
+    browserHistory.push('/')
   }
 
   render () {

@@ -16,6 +16,14 @@ export default class LightDimType extends React.Component {
     this._offHandler = this._offHandler.bind(this)
   }
 
+  componentDidMount () {
+     console.log('LightDimType::componentDidMount()')
+  }
+
+  componentWillUnmount () {
+     console.log('LightDimType::componentWillUnmount()')
+  }
+
   sliderHandler (newValue) {
     this.props.containerHandler(newValue)
   }

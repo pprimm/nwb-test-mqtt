@@ -2,7 +2,7 @@
 
 import React from 'react'
 import { PageHeader, Button, Glyphicon } from 'react-bootstrap'
-import history from '../history'
+import { browserHistory } from 'react-router'
 import AppleCircle from '../components/AppleCircle'
 import TVButtons from '../components/TVButtons'
 
@@ -13,7 +13,7 @@ export default class TVPage extends React.Component {
   }
 
   _clickBack () {
-    history.goBack()
+    browserHistory.push('/')
   }
 
   render () {

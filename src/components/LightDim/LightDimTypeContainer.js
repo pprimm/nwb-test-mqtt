@@ -1,7 +1,7 @@
 'use strict'
 
 import React from 'react'
-import dsClient from '../../client'
+import { subscribe, unsubscribe, publish } from '../../client'
 import LightDimType from './LightDimType'
 
 export default class LightDimTypeContainer extends React.Component {
@@ -9,48 +9,52 @@ export default class LightDimTypeContainer extends React.Component {
       super()
 
       this.state = {value: 0}
-      this.levelHandler = this.levelHandler.bind(this)
-      this.switchHandler = this.switchHandler.bind(this)
-      this.updateLevel = this.updateLevel.bind(this)
+      this.setLevel = this.setLevel.bind(this)
+      this.setCmd = this.setCmd.bind(this)
+      this.getLevel = this.getLevel.bind(this)
+      console.log('LightDimTypeContainer created with props:' + this.props)
    }
 
    componentDidMount () {
       //console.log('LightDimTypeContainer::componentDidMount()')
       //console.log(this.refs)
-      this.levelTopic = this.props.recordName + '/level'
-      this.cmdTopic = this.props.recordName + '/cmd'
-      this.record = dsClient.record.getRecord( this.props.recordName )
-      this.record.subscribe( 'level', this.updateLevel )
+      this.getLevelTopic = 'get/' + this.props.mqttTopic + '/level'
+      this.setLevelTopic = 'set/' + this.props.mqttTopic + '/level'
+      this.setCmdTopic = 'set/' + this.props.mqttTopic + '/cmd'
+      //this.cmdTopic = this.props.mqttTopic + '/cmd'
+      // use
+      subscribe(this.getLevelTopic, this.getLevel )
    }
 
    componentWillUnmount () {
       //console.log('LightDimTypeContainer::componentWillUnmount()')
-      this.record.discard()
+      unsubscribe(this.getLevelTopic)
    }
 
-   updateLevel ( value ) {
+   getLevel ( topic, msg ) {
       //console.log('level: ' + value)
-      this.setState({value: parseInt(value.toString(), 10)})
+      // ignore topic
+      this.setState({value: parseInt(msg.toString(), 10)})
    }
 
-   levelHandler (data) {
-      dsClient.event.emit( this.levelTopic, data )
+   setLevel (data) {
+      publish( this.setLevelTopic, data )
    }
 
-   switchHandler (data) {
+   setCmd (data) {
       //console.log(this)
-      dsClient.event.emit( this.cmdTopic, data )
+      publish( this.setCmdTopic, data )
    }
 
    render () {
-      return <LightDimType switchHandler = {this.switchHandler}
-                           containerHandler = {this.levelHandler}
+      return <LightDimType switchHandler = {this.setCmd}
+                           containerHandler = {this.setLevel}
                            displayName = {this.props.displayName}
                            value={this.state.value}/>
    }
 }
 LightDimTypeContainer.propTypes = {
    displayName: React.PropTypes.string,
-   recordName: React.PropTypes.string.isRequired
+   mqttTopic: React.PropTypes.string.isRequired
 }
 LightDimTypeContainer.defaultProps = { displayName: 'LightDimType' };

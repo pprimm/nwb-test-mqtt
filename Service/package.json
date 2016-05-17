@@ -1,0 +1,15 @@
+{
+  "name": "mqtt-service",
+  "version": "0.0.1",
+  "description": "Mqtt service for react home automation prototype",
+  "main": "main.js",
+  "dependencies": {
+    "mqtt": "^1.4.3"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
